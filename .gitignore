@@ -15,8 +15,8 @@ env/
 *.log
 
 # Model files
-model/*.pth
-*.h5
+# model/*.pth
+# *.h5
 
 # Uploads folder (ignore content but not the folder itself)
 uploads/*
