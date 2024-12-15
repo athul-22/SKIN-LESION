@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Lesion Classifier</title>
+</head>
+<body style="background: linear-gradient(to bottom, #ffecd2, #fcb69f); font-family: Arial, sans-serif; margin: 0; padding: 0;">
+    <!-- Main Container -->
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px;">
+        <!-- Card -->
+        <div style="width: 100%; max-width: 400px; background: white; border-radius: 20px; box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); padding: 30px;">
+            <h1 style="font-size: 2rem; color: #ff7e5f; font-weight: bold; text-align: center; margin-bottom: 20px;">
+                Skin Lesion Classifier
+            </h1>
+            
+            <!-- Form -->
+            <form id="upload-form" style="display: flex; flex-direction: column; gap: 15px;">
+                <input 
+                    type="file" 
+                    id="image-upload" 
+                    accept="image/*" 
+                    style="display: block; width: 100%; padding: 10px; font-size: 14px; color: #ff7e5f; border: 2px dashed #ff7e5f; border-radius: 10px; outline: none; cursor: pointer;"
+                    onmouseover="this.style.borderColor='#d65d48';" 
+                    onmouseout="this.style.borderColor='#ff7e5f';"
+                >
+                <button 
+                    type="submit" 
+                    style="display: block; width: 100%; background: linear-gradient(to right, #ff7e5f, #feb47b); color: white; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s;"
+                    onmouseover="this.style.opacity='0.8';"
+                    onmouseout="this.style.opacity='1';"
+                >
+                    Classify Image
+                </button>
+            </form>
+
+            <!-- Loading Skeleton -->
+            <div id="loading" style="display: none; margin-top: 20px; text-align: center;">
+                <div style="height: 20px; width: 80%; margin: auto; border-radius: 10px; background: linear-gradient(to right, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
+                <div style="height: 20px; width: 60%; margin: 10px auto; border-radius: 10px; background: linear-gradient(to right, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
+                <div style="height: 20px; width: 70%; margin: auto; border-radius: 10px; background: linear-gradient(to right, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
+            </div>
+
+            <!-- Predictions -->
+            <div id="predictions" style="margin-top: 20px;">
+                <!-- Prediction results will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('upload-form');
+            const imageUpload = document.getElementById('image-upload');
+            const predictionsContainer = document.getElementById('predictions');
+            const loadingIndicator = document.getElementById('loading');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Reset previous results
+                predictionsContainer.innerHTML = '';
+                loadingIndicator.style.display = 'block';
+
+                const formData = new FormData();
+                formData.append('file', imageUpload.files[0]);
+
+                try {
+                    // Simulate loading for demonstration purposes
+                    setTimeout(async () => {
+                        const response = await fetch('http://127.0.0.1:5000/predict', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        loadingIndicator.style.display = 'none';
+
+                        if (data.predictions) {
+                            data.predictions.forEach((pred) => {
+                                const predictionElement = document.createElement('div');
+                                predictionElement.style.cssText = `
+                                    background: #fff4e6; 
+                                    border-left: 4px solid #ff7e5f; 
+                                    padding: 15px; 
+                                    margin-bottom: 10px; 
+                                    border-radius: 8px;
+                                `;
+                                predictionElement.innerHTML = `
+                                    <p style="font-size: 16px; font-weight: bold; color: #d65d48; margin: 0;">
+                                        ${pred.diagnosis}
+                                    </p>
+                                    <p style="font-size: 14px; color: #333; margin: 0;">
+                                        Probability: ${(pred.probability * 100).toFixed(2)}%
+                                    </p>
+                                `;
+                                predictionsContainer.appendChild(predictionElement);
+                            });
+                        }
+                    }, 3000);
+                } catch (error) {
+                    loadingIndicator.style.display = 'none';
+                    predictionsContainer.innerHTML = `
+                        <div style="color: red; font-weight: bold; text-align: center;">
+                            Error: ${error.message}
+                        </div>
+                    `;
+                }
+            });
+        });
+
+        // Add shimmer effect animation
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shimmer {
+                from {
+                    background-position: 200% 0;
+                }
+                to {
+                    background-position: -200% 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

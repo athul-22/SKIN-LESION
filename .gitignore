@@ -1,0 +1,43 @@
+# Python-related ignores
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+
+# IDE-specific ignores
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Model files
+model/*.pth
+*.h5
+
+# Uploads folder (ignore content but not the folder itself)
+uploads/*
+!uploads/.gitkeep
+
+# Frontend files
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/*.map
+
+# Ignore hidden system files
+.DS_Store
+*.swp
+*.tmp
+*.bak
+
+# Secrets and environment files
+*.env
+*.key
+*.pem 
+*.cert
+
+venv/

@@ -1,0 +1,8 @@
+flask
+flask-cors
+torch
+torchvision
+pillow
+efficientnet-pytorch
+werkzeug
+numpy
