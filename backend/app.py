@@ -6,7 +6,6 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
-# Import the model definition (copy the same model class from your original script)
 class MelanomaModel(torch.nn.Module):
     def __init__(self, out_size, dropout_prob=0.5):
         super(MelanomaModel, self).__init__()
@@ -41,18 +40,15 @@ DIAGNOSIS_MAP = {
     8: 'Unknown'
 }
 
-# Flask app setup
 app = Flask(__name__, static_folder='../frontend', template_folder='../frontend')
 CORS(app)
 
-# Model and device setup
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = MelanomaModel(out_size=9)
 model.load_state_dict(torch.load('../model/multi_weight.pth', map_location=device)['model_state_dict'])
 model.to(device)
 model.eval()
 
-# Image transformations
 transform = transforms.Compose([
     transforms.Resize(256),
     transforms.CenterCrop(224),
@@ -60,7 +56,6 @@ transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-# Ensure upload directory exists
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -112,7 +107,6 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
-        # Clean up uploaded file
         os.remove(filepath)
 
 if __name__ == '__main__':
